@@ -39,6 +39,8 @@ var brickPadding = 10;
 var brickOffsetTop = 30;
 var brickOffsetLeft = 30;
 
+var score = 0;
+
 //Adicionando os tijolos
 var bricks = [];
 for(var c=0; c<brickColumnCount; c++) {
@@ -59,14 +61,32 @@ function collisionDetection() {
                 if(x > p.x && x < p.x+brickWidth && y > p.y && y < p.y+brickHeight) {
                     dy = -dy;
                     p.status = 0;
+                    score++;
+                    if(score == brickRowCount*brickColumnCount) {
+                        alert("YOU WIN, CONGRATULATIONS!");
+                        document.location.reload();
+                        clearInterval(interval); // Needed for Chrome to end game
+                    }
                 }
                 if(a > p.a && a < p.a+brickWidth && b > p.b && b < p.b+brickHeight) {
                     db = -db;
                     p.status = 0;
+                    score++;
+                    if(score == brickRowCount*brickColumnCount) {
+                        alert("YOU WIN, CONGRATULATIONS!");
+                        document.location.reload();
+                        clearInterval(interval); // Needed for Chrome to end game
+                    }
                 }
             }
         }
     }
+}
+
+function drawScore() {
+    ctx.font = "16px Arial";
+    ctx.fillStyle = "#0095DD";
+    ctx.fillText("Score: "+score, 8, 20);
 }
 
 function drawBricks() {
@@ -142,6 +162,7 @@ function draw() {
     drawBall2();
     drawPaddle();
     drawBricks();
+    drawScore();
     collisionDetection();
     
     if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
