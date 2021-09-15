@@ -71,7 +71,11 @@ button{
   width: 100px;
   height: 50px;
 }
-
+#hit
+{
+  width: 50%;
+  
+}
 #monsters{
   height: 300px;
   width: 100%;
@@ -97,4 +101,10 @@ button{
   border-radius: 20px;
   margin-top: 50px;
   margin-right: 60px;
+}
+
+h1
+{
+  font-family: Arial, Helvetica, sans-serif;
+  text-align: center;
 }

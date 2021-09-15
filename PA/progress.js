@@ -1,30 +1,31 @@
 function move() {
-    var elem = document.getElementById("myBar");
-    var percElem = document.getElementById("percentual");
-    var layers = 8;
-    var percentual = 100;
-    var id = setInterval(frame, 10);
+    var elem = document.getElementById("myBar2");
+    var percElem = document.getElementById("percentual2").innerHTML;
+    var lay = document.getElementById("layers2").innerHTML;
+    percentual = parseFloat(percElem);
+    layers = parseInt(lay);
 
-    function frame() {
-        if (layers <  1) {
-            clearInterval(id);
-        } else {
-        	    if (layers <= 8) {
-                    percentual = Math.round((percentual - 0.1) * 100) / 100
-                    percElem.innerHTML = percentual;
-            }
-            
-        	    if (isInt(percentual/12.5)) {
-            	    console.log(percentual);
-            	    
-            
-                    var layer = document.getElementById("layer-" + layers);
-                    layer.style.backgroundColor = '#ff3333';
-                    layers--;
 
-            }
+
+    if(layers >= 9)
+    {
+        percentual = percentual-12.5;
+        document.getElementById("percentual2").innerHTML = percentual;
+
+        console.log(percentual);          	    
+            
+        var layer = document.getElementById("layer-" + layers);
+        layer.style.backgroundColor = '#ff3333';
+        document.getElementById("layers2").innerHTML = layers-1;
+
+        if(percentual == 0)
+        {
+        alert("Você venceu!");
         }
     }
+
+    
+    
 }
 
 function isInt(n) {
