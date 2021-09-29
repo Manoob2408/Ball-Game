@@ -31,8 +31,8 @@ var rightPressed = false;
 var leftPressed = false;
 
 //Propriedades dos tijolos
-var brickRowCount = 3;
-var brickColumnCount = 5;
+var brickRowCount = 4;
+var brickColumnCount = 11;
 var brickWidth = 75;
 var brickHeight = 20;
 var brickPadding = 10;
