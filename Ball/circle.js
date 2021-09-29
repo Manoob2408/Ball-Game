@@ -51,7 +51,15 @@ for(var c=0; c<brickColumnCount; c++) {
 }
 
 document.addEventListener("keydown", keyDownHandler, false);
+document.addEventListener("mousemove", mouseMoveHandler, false);
 document.addEventListener("keyup", keyUpHandler, false);
+
+function mouseMoveHandler(e) {
+    var relativeX = e.clientX - canvas.offsetLeft;
+    if(relativeX > 0 && relativeX < canvas.width) {
+        paddleX = relativeX - paddleWidth/2;
+    }
+}
 
 function collisionDetection() {
     for(var c=0; c<brickColumnCount; c++) {
@@ -86,7 +94,7 @@ function collisionDetection() {
 function drawScore() {
     ctx.font = "16px Arial";
     ctx.fillStyle = "#0095DD";
-    ctx.fillText("Score: "+score, 8, 20);
+    ctx.fillText("Score: "+ score, 8, 20);
 }
 
 function drawBricks() {
@@ -176,9 +184,9 @@ function draw() {
             dy = -dy;
         }
         else {
-            //alert("GAME OVER");
-            //document.location.reload();
-            //clearInterval(interval); // Needed for Chrome to end game
+            alert("GAME OVER");
+            document.location.reload();
+            clearInterval(interval); // Needed for Chrome to end game
             dy = -dy;
         }
     }
@@ -188,6 +196,17 @@ function draw() {
     }
     if(b + db > canvas.height-ballRadius || b + db < ballRadius) {
         db = -db;
+    }
+    else if(b + db > canvas.height-ballRadius) {
+        if(a > paddleX && a < paddleX + paddleWidth) {
+            db = -db;
+        }
+        else {
+            //alert("GAME OVER");
+            //document.location.reload();
+            //clearInterval(interval); // Needed for Chrome to end game
+            db = -db;
+        }
     }
 
     if(rightPressed) {
