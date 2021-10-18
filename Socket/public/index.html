@@ -3,7 +3,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" contente="width=devide-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <title>Chat da Rockeseat</title>
+        <title>Ball Game</title>
 
         <script src="https:cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script src="https:cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"></script>
@@ -11,55 +11,258 @@
         <link rel="stylesheet" type="text/css" href="styles.css">
     </head>
     <body>
-        <form id="chat">
+        <canvas id="myCanvas" width="480" height="320" style="background-color:#F9FF9B;"></canvas>
+        <!-- <form id="chat">
             <input type="text" name="username" placeholder="Digite seu usuario">
             <div class="messages"></div>
             <input type="text" name="message" placeholder="Digite sua mensagem">
             <button type="submit">Enviar</button>
-        </form>
+        </form> -->
 
         <script type="text/javascript">
             var socket = io('http://localhost:3000');
             
-            function renderMessage(message){
-                $('.messages').append('<div class="message"><strong>'+message.author+'</strong>: '+ message.message+'</div>');
+            
+            function mudarTela(ball){
+                //$('.messages').append('<div class="message"><strong>'+message.author+'</strong>: '+ message.message+'</div>');
+                
             }
 
-            function testeMessage(message){
-                $('.messages').append('<div class="message"><strong>'+message.author+'</strong>: '+ 'mensagem teste'+'</div>');
+            socket.on('mudarTela', function(ball){
+                mudarTela(ball);
+            });
+
+
+
+            // $('#chat').submit(function(event) {
+            //     event.preventDefault();
+
+            //     var author = $('input[name=username]').val();
+            //     var message = $('input[name=message]').val();
+
+            //     if(author.length && message.length){
+            //         var messageObject = {
+            //             author: author,
+            //             message: message,
+            //         };
+
+            //         renderMessage(messageObject);
+
+            //         socket.emit('sendMessage', messageObject);
+            //     }
+            // });
+            var canvas = document.getElementById("myCanvas");
+
+            var ctx = canvas.getContext("2d");
+
+            //Raio das bolas
+            var ballRadius = 10;
+
+            //Definir a posição da bola 1
+            var x = canvas.width/2;
+            var y = canvas.height-30;
+
+            // Definir a posição da bola 2
+            var a = canvas.width-50;
+            var b = canvas.height-50;
+
+            //Velocidade da bola 1
+            var dx = 2;
+            var dy = -2;
+
+            //Velocidade da bola 2
+            var da = 2;
+            var db = -2;
+
+            //Propriedades do retângulo
+            var paddleHeight = 10;
+            var paddleWidth = 75;
+            var paddleX = (canvas.width-paddleWidth) / 2;
+
+            //Controle do retângulo pelas setas
+            var rightPressed = false;
+            var leftPressed = false;
+
+            //Propriedades dos tijolos
+            var brickRowCount = 3;
+            var brickColumnCount = 5;
+            var brickWidth = 75;
+            var brickHeight = 20;
+            var brickPadding = 10;
+            var brickOffsetTop = 30;
+            var brickOffsetLeft = 30;
+
+            var score = 0;
+
+            //Adicionando os tijolos
+            var bricks = [];
+            for(var c=0; c<brickColumnCount; c++) {
+                bricks[c] = [];
+                for(var r=0; r<brickRowCount; r++) {
+                    bricks[c][r] = { x: 0, y: 0, a: 0, b: 0, status: 1 };
+                }
             }
 
-            socket.on('previousMessage', function(messages){
-                for(message of messages){
-                    renderMessage(message);
+            document.addEventListener("keydown", keyDownHandler, false);
+            document.addEventListener("keyup", keyUpHandler, false);
+
+            function collisionDetection() {
+                for(var c=0; c<brickColumnCount; c++) {
+                    for(var r=0; r<brickRowCount; r++) {
+                        var p = bricks[c][r];
+                        if(p.status == 1) {
+                            if(x > p.x && x < p.x+brickWidth && y > p.y && y < p.y+brickHeight) {
+                                dy = -dy;
+                                p.status = 0;
+                                score++;
+                                if(score == brickRowCount*brickColumnCount) {
+                                    alert("YOU WIN, CONGRATULATIONS!");
+                                    document.location.reload();
+                                    clearInterval(interval); // Needed for Chrome to end game
+                                }
+                            }
+                            if(a > p.a && a < p.a+brickWidth && b > p.b && b < p.b+brickHeight) {
+                                db = -db;
+                                p.status = 0;
+                                score++;
+                                if(score == brickRowCount*brickColumnCount) {
+                                    alert("YOU WIN, CONGRATULATIONS!");
+                                    document.location.reload();
+                                    clearInterval(interval); // Needed for Chrome to end game
+                                }
+                            }
+                        }
+                    }
                 }
-            });
+            }
 
-            socket.on('receivedMessage', function(message){
-                renderMessage(message);
-            });
+            function drawScore() {
+                ctx.font = "16px Arial";
+                ctx.fillStyle = "#0095DD";
+                ctx.fillText("Score: "+score, 8, 20);
+            }
 
-            socket.on('teste', function(message){
-                testeMessage(message);
-            });
-
-            $('#chat').submit(function(event) {
-                event.preventDefault();
-
-                var author = $('input[name=username]').val();
-                var message = $('input[name=message]').val();
-
-                if(author.length && message.length){
-                    var messageObject = {
-                        author: author,
-                        message: message,
-                    };
-
-                    renderMessage(messageObject);
-
-                    socket.emit('sendMessage', messageObject);
+            function drawBricks() {
+                for(var c=0; c<brickColumnCount; c++) {
+                    for(var r=0; r<brickRowCount; r++) {
+                        if(bricks[c][r].status == 1) {
+                            var brickX = (c*(brickWidth+brickPadding))+brickOffsetLeft;
+                            var brickY = (r*(brickHeight+brickPadding))+brickOffsetTop;
+                            bricks[c][r].x = brickX;
+                            bricks[c][r].y = brickY;
+                            bricks[c][r].a = brickX;
+                            bricks[c][r].b = brickY;
+                            ctx.beginPath();
+                            ctx.rect(brickX, brickY, brickWidth, brickHeight);
+                            ctx.fillStyle = "#0095DD";
+                            ctx.fill();
+                            ctx.closePath();
+                        }
+                    }
                 }
-            });
+            }
+
+            function keyDownHandler(e) {
+                if(e.key == "Right" || e.key == "ArrowRight") {
+                    rightPressed = true;
+                }
+                else if(e.key == "Left" || e.key == "ArrowLeft") {
+                    leftPressed = true;
+                }
+            }
+
+            function keyUpHandler(e) {
+                if(e.key == "Right" || e.key == "ArrowRight") {
+                    rightPressed = false;
+                }
+                else if(e.key == "Left" || e.key == "ArrowLeft") {
+                    leftPressed = false;
+                }
+            }
+
+            function drawPaddle() {
+
+                ctx.beginPath();
+                ctx.rect(paddleX, canvas.height-paddleHeight, paddleWidth, paddleHeight);
+                ctx.fillStyle = "#0095DD";
+                ctx.fill();
+                ctx.closePath();
+            }
+
+            function drawBall1() {
+
+                ctx.beginPath();
+                ctx.arc(x, y, ballRadius, 0, Math.PI*2);
+                ctx.fillStyle = "#0095DD";
+                ctx.fill();
+                ctx.closePath();
+            }
+
+            function drawBall2(){
+
+                ctx.beginPath();
+                ctx.arc(a, b, ballRadius, 0, Math.PI*2);
+                ctx.fillStyle = "#FF1493";
+                ctx.fill();
+                ctx.closePath();
+            }
+
+            function draw() {
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                drawBall1();
+                drawBall2();
+                drawPaddle();
+                drawBricks();
+                drawScore();
+                collisionDetection();
+                
+                if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
+                    dx = -dx;
+                }
+                if(y + dy < ballRadius) {
+                    dy = -dy;
+                }
+                else if(y + dy > canvas.height-ballRadius) {
+                    if(x > paddleX && x < paddleX + paddleWidth) {
+                        dy = -dy;
+                    }
+                    else {
+                        //alert("GAME OVER");
+                        //document.location.reload();
+                        //clearInterval(interval); // Needed for Chrome to end game
+                        dy = -dy;
+                    }
+                }
+
+                if(a + da > canvas.width-ballRadius || a + da < ballRadius) {
+                    da = -da;
+                }
+                if(b + db > canvas.height-ballRadius || b + db < ballRadius) {
+                    db = -db;
+                }
+
+                if(rightPressed) {
+                    paddleX += 7;
+                    if (paddleX + paddleWidth > canvas.width){
+                        paddleX = canvas.width - paddleWidth;
+                    }
+                }
+                else if(leftPressed) {
+                    paddleX -= 7;
+                    if (paddleX < 0){
+                        paddleX = 0;
+                    }
+                }
+                
+                x += dx;
+                y += dy;
+                a += da;
+                b += db;
+            }
+
+            setInterval(draw, 10);
         </script>
     </body>
 </html>
