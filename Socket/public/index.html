@@ -25,6 +25,10 @@
                 $('.messages').append('<div class="message"><strong>'+message.author+'</strong>: '+ message.message+'</div>');
             }
 
+            function testeMessage(message){
+                $('.messages').append('<div class="message"><strong>'+message.author+'</strong>: '+ 'mensagem teste'+'</div>');
+            }
+
             socket.on('previousMessage', function(messages){
                 for(message of messages){
                     renderMessage(message);
@@ -33,6 +37,10 @@
 
             socket.on('receivedMessage', function(message){
                 renderMessage(message);
+            });
+
+            socket.on('teste', function(message){
+                testeMessage(message);
             });
 
             $('#chat').submit(function(event) {

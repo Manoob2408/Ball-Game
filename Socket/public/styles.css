@@ -35,6 +35,10 @@ html, body {
     color: #FFF;
     margin-top: 10px;
   }
+
+  canvas{
+    background-color:#F9FF9B;
+  }
   
   .messages {
     width: 600px;
