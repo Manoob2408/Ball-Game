@@ -27,20 +27,14 @@ io.on('connection', async(socket)  => {
     try{
         console.log(`Socket conectado: ${socket.id}`);
         sockets_conectados.push(socket.id);
-        console.log(`Socket conectado: ${sockets_conectados}`);
-
         //socket.emit('previousMessage', messages);
 
         const count2 = io.of("/").sockets.size;
         const count3 =  socket.rooms.size;
 
-        if(count2<3){
-            console.log(`rooms: ${count2}  ${count3} ${socket.rooms} `);
-        }
-        else{
+        if(count2>2){
             socket.disconnect();
             sockets_conectados.pop(socket.id);
-            console.log(`Mais que 2 sockets! `);
         }
 
         //socket.join("room:" + count2);
@@ -48,6 +42,11 @@ io.on('connection', async(socket)  => {
             console.log(`Socket desconectado: ${socket.id}`);
             sockets_conectados.pop(socket.id);
             //socket.disconnect();
+        });
+
+        socket.on('desenharScore', () => {
+            //messages.push(data);
+            socket.broadcast.emit('teste');
         });
 
     }

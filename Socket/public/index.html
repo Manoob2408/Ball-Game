@@ -32,7 +32,9 @@
                 mudarTela(ball);
             });
 
-
+            socket.on('teste', () => {
+                drawScore2();
+            });
 
             // $('#chat').submit(function(event) {
             //     event.preventDefault();
@@ -53,7 +55,7 @@
             // });
             var canvas = document.getElementById("myCanvas");
 
-            var ctx = canvas.getContext("2d");
+            var ctx = canvas.getContext("2d"); 
 
             //Raio das bolas
             var ballRadius = 10;
@@ -65,6 +67,9 @@
             // Definir a posição da bola 2
             var a = canvas.width-50;
             var b = canvas.height-50;
+
+            // Definir a tela da bola
+            var tela_atual = true;
 
             //Velocidade da bola 1
             var dx = 2;
@@ -115,9 +120,10 @@
                                 dy = -dy;
                                 p.status = 0;
                                 score++;
+                                //socket.emit('desenharScore');
                                 if(score == brickRowCount*brickColumnCount) {
                                     alert("YOU WIN, CONGRATULATIONS!");
-                                    document.location.reload();
+                                    //document.location.reload();
                                     clearInterval(interval); // Needed for Chrome to end game
                                 }
                             }
@@ -127,7 +133,7 @@
                                 score++;
                                 if(score == brickRowCount*brickColumnCount) {
                                     alert("YOU WIN, CONGRATULATIONS!");
-                                    document.location.reload();
+                                    //document.location.reload();
                                     clearInterval(interval); // Needed for Chrome to end game
                                 }
                             }
@@ -136,10 +142,24 @@
                 }
             }
 
+            function parede(){
+                //if(x < ctx.width){
+                if(x>=465){
+                    socket.emit('desenharScore', y);
+                    tela_atual=false;
+                }
+            }
+
             function drawScore() {
                 ctx.font = "16px Arial";
                 ctx.fillStyle = "#0095DD";
                 ctx.fillText("Score: "+score, 8, 20);
+            }
+
+            function drawScore2(y) {
+                ctx.font = "16px Arial";
+                ctx.fillStyle = "#0095DD";
+                ctx.fillText("Score: "+score, 8, y);
             }
 
             function drawBricks() {
@@ -190,12 +210,14 @@
             }
 
             function drawBall1() {
-
-                ctx.beginPath();
-                ctx.arc(x, y, ballRadius, 0, Math.PI*2);
-                ctx.fillStyle = "#0095DD";
-                ctx.fill();
-                ctx.closePath();
+                if(tela_atual==true){
+                    ctx.beginPath();
+                    ctx.arc(x, y, ballRadius, 0, Math.PI*2);
+                    ctx.fillStyle = "#0095DD";
+                    ctx.fill();
+                    ctx.closePath();
+                }
+                
             }
 
             function drawBall2(){
@@ -217,6 +239,7 @@
                 drawBricks();
                 drawScore();
                 collisionDetection();
+                parede();
                 
                 if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
                     dx = -dx;
@@ -245,6 +268,9 @@
 
                 if(rightPressed) {
                     paddleX += 7;
+                    //socket.broadcast.emit('drawScore2');
+                    //drawScore2();
+                    //socket.emit('desenharScore');
                     if (paddleX + paddleWidth > canvas.width){
                         paddleX = canvas.width - paddleWidth;
                     }
