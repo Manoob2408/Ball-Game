@@ -12,47 +12,19 @@
     </head>
     <body>
         <canvas id="myCanvas" width="480" height="320" style="background-color:#F9FF9B;"></canvas>
-        <!-- <form id="chat">
-            <input type="text" name="username" placeholder="Digite seu usuario">
-            <div class="messages"></div>
-            <input type="text" name="message" placeholder="Digite sua mensagem">
-            <button type="submit">Enviar</button>
-        </form> -->
 
         <script type="text/javascript">
             var socket = io('http://localhost:3000');
-            
-            
-            function mudarTela(ball){
-                //$('.messages').append('<div class="message"><strong>'+message.author+'</strong>: '+ message.message+'</div>');
-                
-            }
+            var tela;
 
-            socket.on('mudarTela', function(ball){
-                mudarTela(ball);
+            socket.on('mudarTela', function(ball, y){
+                mudarTela(ball, y);
             });
 
-            socket.on('teste', () => {
-                drawScore2();
+            socket.on('start', numTela => {
+                tela=numTela;
             });
 
-            // $('#chat').submit(function(event) {
-            //     event.preventDefault();
-
-            //     var author = $('input[name=username]').val();
-            //     var message = $('input[name=message]').val();
-
-            //     if(author.length && message.length){
-            //         var messageObject = {
-            //             author: author,
-            //             message: message,
-            //         };
-
-            //         renderMessage(messageObject);
-
-            //         socket.emit('sendMessage', messageObject);
-            //     }
-            // });
             var canvas = document.getElementById("myCanvas");
 
             var ctx = canvas.getContext("2d"); 
@@ -62,15 +34,16 @@
 
             //Definir a posição da bola 1
             var x = canvas.width/2;
-            var y = canvas.height-30;
+            var y = canvas.height-40;
 
             // Definir a posição da bola 2
-            var a = canvas.width-50;
-            var b = canvas.height-50;
+            //var a = canvas.width-50;
+            var a = canvas.width/2;
+            var b = canvas.height-30;
 
             // Definir a tela da bola
-            var tela_atual = true;
-
+            var ball1_ative = true;
+            var ball2_ative = true;
             //Velocidade da bola 1
             var dx = 2;
             var dy = -2;
@@ -111,6 +84,7 @@
             document.addEventListener("keydown", keyDownHandler, false);
             document.addEventListener("keyup", keyUpHandler, false);
 
+            
             function collisionDetection() {
                 for(var c=0; c<brickColumnCount; c++) {
                     for(var r=0; r<brickRowCount; r++) {
@@ -142,24 +116,49 @@
                 }
             }
 
+            function mudarTela(ball, posicao){
+                
+                if(ball=='ball1'){
+
+                    ball1_ative=true;
+                    x=10;
+                    y=posicao;
+                }
+                else{
+                    ball2_ative=true;
+                    a=10;
+                    b=posicao;
+                }
+            }
+
+            function ativarBolas(){
+                if(tela==1)
+                    ball2_ative=false;
+                else if(tela==2)
+                    ball1_ative=false;
+            }
+
             function parede(){
-                //if(x < ctx.width){
-                if(x>=465){
-                    socket.emit('desenharScore', y);
-                    tela_atual=false;
+                if(x>=465 && ball1_ative==true){
+                    ball1_ative=false;
+                    socket.emit('desenharScore','ball1', y);
+                }
+                if(a>=465 && ball2_ative==true){
+                    ball2_ative=false;
+                    socket.emit('desenharScore','ball2', y);
                 }
             }
 
             function drawScore() {
                 ctx.font = "16px Arial";
                 ctx.fillStyle = "#0095DD";
-                ctx.fillText("Score: "+score, 8, 20);
+                ctx.fillText("Score: "+tela, 8, 20);
             }
 
             function drawScore2(y) {
-                ctx.font = "16px Arial";
+                ctx.font = "25px Arial";
                 ctx.fillStyle = "#0095DD";
-                ctx.fillText("Score: "+score, 8, y);
+                ctx.fillText("Score: "+score, 8, 40);
             }
 
             function drawBricks() {
@@ -210,44 +209,50 @@
             }
 
             function drawBall1() {
-                if(tela_atual==true){
-                    ctx.beginPath();
-                    ctx.arc(x, y, ballRadius, 0, Math.PI*2);
-                    ctx.fillStyle = "#0095DD";
-                    ctx.fill();
-                    ctx.closePath();
-                }
-                
+                ctx.beginPath();
+                ctx.arc(x, y, ballRadius, 0, Math.PI*2);
+                ctx.fillStyle = "#0095DD";
+                    // if(tela==1)
+                    //     ctx.fillStyle = "#0095DD";
+                    // else
+                    //     ctx.fillStyle = "#FF1493";
+                ctx.fill();
+                ctx.closePath();            
             }
 
-            function drawBall2(){
-
+            function drawBall2(){                
                 ctx.beginPath();
                 ctx.arc(a, b, ballRadius, 0, Math.PI*2);
                 ctx.fillStyle = "#FF1493";
+                    // if(tela==1)
+                    //     ctx.fillStyle = "#FF1493";
+                    // else
+                    //     ctx.fillStyle = "#0095DD";
                 ctx.fill();
-                ctx.closePath();
+                ctx.closePath(); 
             }
 
             function draw() {
 
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-                drawBall1();
-                drawBall2();
+                if(ball1_ative==true)
+                    drawBall1();
+                if(ball2_ative==true)
+                    drawBall2();
                 drawPaddle();
                 drawBricks();
                 drawScore();
                 collisionDetection();
                 parede();
                 
-                if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
+                if(x + dx > canvas.width-ballRadius || x + dx < ballRadius && ball1_ative==true) {
                     dx = -dx;
                 }
-                if(y + dy < ballRadius) {
+                if(y + dy < ballRadius && ball1_ative==true) {
                     dy = -dy;
                 }
-                else if(y + dy > canvas.height-ballRadius) {
+                else if(y + dy > canvas.height-ballRadius && ball1_ative==true) {
                     if(x > paddleX && x < paddleX + paddleWidth) {
                         dy = -dy;
                     }
@@ -259,18 +264,15 @@
                     }
                 }
 
-                if(a + da > canvas.width-ballRadius || a + da < ballRadius) {
+                if(a + da > canvas.width-ballRadius || a + da < ballRadius && ball2_ative==true) {
                     da = -da;
                 }
-                if(b + db > canvas.height-ballRadius || b + db < ballRadius) {
+                if(b + db > canvas.height-ballRadius || b + db < ballRadius && ball2_ative==true) {
                     db = -db;
                 }
 
                 if(rightPressed) {
                     paddleX += 7;
-                    //socket.broadcast.emit('drawScore2');
-                    //drawScore2();
-                    //socket.emit('desenharScore');
                     if (paddleX + paddleWidth > canvas.width){
                         paddleX = canvas.width - paddleWidth;
                     }
@@ -281,13 +283,17 @@
                         paddleX = 0;
                     }
                 }
+                if(ball1_ative==true){
+                   x += dx;
+                   y += dy; 
+                }
+                if(ball2_ative==true){
+                   a += da;
+                   b += db;  
+                }
                 
-                x += dx;
-                y += dy;
-                a += da;
-                b += db;
             }
-
+            ativarBolas();
             setInterval(draw, 10);
         </script>
     </body>

@@ -27,10 +27,12 @@ io.on('connection', async(socket)  => {
     try{
         console.log(`Socket conectado: ${socket.id}`);
         sockets_conectados.push(socket.id);
-        //socket.emit('previousMessage', messages);
-
+         
         const count2 = io.of("/").sockets.size;
-        const count3 =  socket.rooms.size;
+
+        console.log(`Sockets: ${sockets_conectados} ${count2}`);
+
+        socket.emit('start', count2);
 
         if(count2>2){
             socket.disconnect();
@@ -44,10 +46,10 @@ io.on('connection', async(socket)  => {
             //socket.disconnect();
         });
 
-        socket.on('desenharScore', () => {
-            //messages.push(data);
-            socket.broadcast.emit('teste');
+        socket.on('desenharScore', function(ball, y) {
+            socket.broadcast.emit('mudarTela', ball, y);
         });
+
 
     }
     catch{
@@ -62,4 +64,5 @@ server.listen(3000);
     Primeiro passo: limitar para duas telas e definir quais são os sockets conectados
     Segundo passo: ver como será definido o tamanho das telas
     Terceiro passo: transmitir um dos componentes para outra tela
+    Quarto passo: quando a bola bate na parede manda para a outra tela no width 0
 */
