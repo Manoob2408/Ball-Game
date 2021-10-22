@@ -11,7 +11,7 @@ var y = canvas.height-30;
 
 // Definir a posição da bola 2
 var a = canvas.width-50;
-var b = canvas.height-50;
+var b = canvas.height-40;
 
 //Velocidade da bola 1
 var dx = 2;
@@ -22,9 +22,10 @@ var da = 2;
 var db = -2;
 
 //Propriedades do retângulo
-var paddleHeight = 10;
+var paddleHeight = 15;
 var paddleWidth = 75;
-var paddleX = (canvas.width-paddleWidth) / 2;
+var paddleX = (canvas.width/ 3) - paddleWidth;
+var paddle2X = (2*canvas.width/3) - paddleWidth;
 
 //Controle do retângulo pelas setas
 var rightPressed = false;
@@ -40,6 +41,7 @@ var brickOffsetTop = 30;
 var brickOffsetLeft = 30;
 
 var score = 0;
+var score2 = 0;
 
 //Adicionando os tijolos
 var bricks = [];
@@ -71,7 +73,7 @@ function collisionDetection() {
                     p.status = 0;
                     score++;
                     if(score == brickRowCount*brickColumnCount) {
-                        alert("YOU WIN, CONGRATULATIONS!");
+                        alert("BLUE YOU WIN, CONGRATULATIONS!");
                         document.location.reload();
                         clearInterval(interval); // Needed for Chrome to end game
                     }
@@ -79,9 +81,9 @@ function collisionDetection() {
                 if(a > p.a && a < p.a+brickWidth && b > p.b && b < p.b+brickHeight) {
                     db = -db;
                     p.status = 0;
-                    score++;
+                    score2++;
                     if(score == brickRowCount*brickColumnCount) {
-                        alert("YOU WIN, CONGRATULATIONS!");
+                        alert("PINK YOU WIN, CONGRATULATIONS!");
                         document.location.reload();
                         clearInterval(interval); // Needed for Chrome to end game
                     }
@@ -94,8 +96,17 @@ function collisionDetection() {
 function drawScore() {
     ctx.font = "16px Arial";
     ctx.fillStyle = "#0095DD";
-    ctx.fillText("Score: "+ score, 8, 20);
+    ctx.fillText("Score Ball Blue: "+ score, 8, 20);
 }
+
+function drawScore2() {
+    ctx.font = "16px Arial";
+    ctx.fillStyle = "#FF1493";
+    ctx.fillText("Score Ball Pink: "+ score2, 850, 20);
+}
+
+
+
 
 function drawBricks() {
     for(var c=0; c<brickColumnCount; c++) {
@@ -109,7 +120,7 @@ function drawBricks() {
                 bricks[c][r].b = brickY;
                 ctx.beginPath();
                 ctx.rect(brickX, brickY, brickWidth, brickHeight);
-                ctx.fillStyle = "#0095DD";
+                ctx.fillStyle = "#00FA9A";
                 ctx.fill();
                 ctx.closePath();
             }
@@ -144,6 +155,16 @@ function drawPaddle() {
     ctx.closePath();
 }
 
+function drawPaddle2() {
+
+    ctx.beginPath();
+    ctx.rect(paddle2X, canvas.height-paddleHeight, paddleWidth, paddleHeight);
+    ctx.fillStyle = "#FF1493";
+    ctx.fill();
+    ctx.closePath();
+}
+
+
 function drawBall1() {
 
     ctx.beginPath();
@@ -169,14 +190,16 @@ function draw() {
     drawBall1();
     drawBall2();
     drawPaddle();
+    drawPaddle2();
     drawBricks();
     drawScore();
+    drawScore2();
     collisionDetection();
     
     if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
         dx = -dx;
     }
-    if(y + dy < ballRadius) {
+    if(y + dy > canvas.height-ballRadius || y + dy < ballRadius) {
         dy = -dy;
     }
     else if(y + dy > canvas.height-ballRadius) {
@@ -184,9 +207,9 @@ function draw() {
             dy = -dy;
         }
         else {
-            alert("GAME OVER");
-            document.location.reload();
-            clearInterval(interval); // Needed for Chrome to end game
+            //alert("GAME OVER");
+            //document.location.reload();
+            //clearInterval(interval); // Needed for Chrome to end game
             dy = -dy;
         }
     }
@@ -210,15 +233,15 @@ function draw() {
     }
 
     if(rightPressed) {
-        paddleX += 7;
-        if (paddleX + paddleWidth > canvas.width){
-            paddleX = canvas.width - paddleWidth;
+        paddle2X += 7;
+        if (paddle2X + paddleWidth > canvas.width){
+            paddle2X = canvas.width - paddleWidth;
         }
     }
     else if(leftPressed) {
-        paddleX -= 7;
-        if (paddleX < 0){
-            paddleX = 0;
+        paddle2X -= 7;
+        if (paddle2X < 0){
+            paddle2X = 0;
         }
     }
     
