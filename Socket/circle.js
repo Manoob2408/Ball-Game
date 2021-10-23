@@ -25,6 +25,7 @@ var db = -2;
 var paddleHeight = 10;
 var paddleWidth = 75;
 var paddleX = (canvas.width-paddleWidth) / 2;
+var paddle2X = (2*canvas.width/3) - paddleWidth;
 
 //Controle do retângulo pelas setas
 var rightPressed = false;
@@ -40,6 +41,7 @@ var brickOffsetTop = 30;
 var brickOffsetLeft = 30;
 
 var score = 0;
+var score2 = 0;
 
 //Adicionando os tijolos
 var bricks = [];
@@ -52,6 +54,14 @@ for(var c=0; c<brickColumnCount; c++) {
 
 document.addEventListener("keydown", keyDownHandler, false);
 document.addEventListener("keyup", keyUpHandler, false);
+document.addEventListener("mousemove", mouseMoveHandler, false);
+
+function mouseMoveHandler(e) {
+    var relativeX = e.clientX - canvas.offsetLeft;
+    if(relativeX > 0 && relativeX < canvas.width) {
+        paddleX = relativeX - paddleWidth/2;
+    }
+}
 
 function collisionDetection() {
     for(var c=0; c<brickColumnCount; c++) {
@@ -63,7 +73,7 @@ function collisionDetection() {
                     p.status = 0;
                     score++;
                     if(score == brickRowCount*brickColumnCount) {
-                        alert("YOU WIN, CONGRATULATIONS!");
+                        alert("BLUE YOU WIN, CONGRATULATIONS!");
                         document.location.reload();
                         clearInterval(interval); // Needed for Chrome to end game
                     }
@@ -71,9 +81,9 @@ function collisionDetection() {
                 if(a > p.a && a < p.a+brickWidth && b > p.b && b < p.b+brickHeight) {
                     db = -db;
                     p.status = 0;
-                    score++;
+                    score2++;
                     if(score == brickRowCount*brickColumnCount) {
-                        alert("YOU WIN, CONGRATULATIONS!");
+                        alert("PINK YOU WIN, CONGRATULATIONS!");
                         document.location.reload();
                         clearInterval(interval); // Needed for Chrome to end game
                     }
@@ -86,7 +96,13 @@ function collisionDetection() {
 function drawScore() {
     ctx.font = "16px Arial";
     ctx.fillStyle = "#0095DD";
-    ctx.fillText("Score: "+score, 8, 20);
+    ctx.fillText("Score Ball Blue: "+ score, 8, 20);
+}
+
+function drawScore2() {
+    ctx.font = "16px Arial";
+    ctx.fillStyle = "#FF1493";
+    ctx.fillText("Score Ball Pink: "+ score2, 850, 20);
 }
 
 function drawBricks() {
@@ -101,7 +117,7 @@ function drawBricks() {
                 bricks[c][r].b = brickY;
                 ctx.beginPath();
                 ctx.rect(brickX, brickY, brickWidth, brickHeight);
-                ctx.fillStyle = "#0095DD";
+                ctx.fillStyle = "#00FA9A";
                 ctx.fill();
                 ctx.closePath();
             }
@@ -132,6 +148,15 @@ function drawPaddle() {
     ctx.beginPath();
     ctx.rect(paddleX, canvas.height-paddleHeight, paddleWidth, paddleHeight);
     ctx.fillStyle = "#0095DD";
+    ctx.fill();
+    ctx.closePath();
+}
+
+function drawPaddle2() {
+
+    ctx.beginPath();
+    ctx.rect(paddle2X, canvas.height-paddleHeight, paddleWidth, paddleHeight);
+    ctx.fillStyle = "#FF1493";
     ctx.fill();
     ctx.closePath();
 }

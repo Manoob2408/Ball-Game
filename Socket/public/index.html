@@ -7,11 +7,18 @@
 
         <script src="https:cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script src="https:cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"></script>
+        <!-- <script src="/Socket/public/server.js" type="module"></script> -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <script src="https://yoannmoinet.github.io/nipplejs/javascripts/nipplejs.js"></script>
 
         <link rel="stylesheet" type="text/css" href="styles.css">
     </head>
     <body>
-        <canvas id="myCanvas" width="480" height="320" style="background-color:#F9FF9B;"></canvas>
+        <canvas id="myCanvas" width="1000" height="500" style="background-color:#F9FF9B;"></canvas>
+
+        <div class="col-md-6">
+            <div class="zone static"></div>
+        </div>
 
         <script type="text/javascript">
             var socket = io('http://localhost:3000');
@@ -46,7 +53,7 @@
             var ball2_ative = true;
             //Velocidade da bola 1
             var dx = 2;
-            var dy = -2;
+            var dy = 2;
 
             //Velocidade da bola 2
             var da = 2;
@@ -56,21 +63,23 @@
             var paddleHeight = 10;
             var paddleWidth = 75;
             var paddleX = (canvas.width-paddleWidth) / 2;
-
+            var paddle2X = (2*canvas.width/3) - paddleWidth;
+            
             //Controle do retângulo pelas setas
             var rightPressed = false;
             var leftPressed = false;
 
             //Propriedades dos tijolos
-            var brickRowCount = 3;
-            var brickColumnCount = 5;
+            var brickRowCount = 4;
+            var brickColumnCount = 11;
             var brickWidth = 75;
             var brickHeight = 20;
             var brickPadding = 10;
             var brickOffsetTop = 30;
             var brickOffsetLeft = 30;
 
-            var score = 0;
+            var score1 = 0;
+            var score2 = 0;
 
             //Adicionando os tijolos
             var bricks = [];
@@ -81,9 +90,17 @@
                 }
             }
 
+
             document.addEventListener("keydown", keyDownHandler, false);
             document.addEventListener("keyup", keyUpHandler, false);
+            document.addEventListener("mousemove", mouseMoveHandler, false);
 
+            function mouseMoveHandler(e) {
+                var relativeX = e.clientX - canvas.offsetLeft;
+                if(relativeX > 0 && relativeX < canvas.width) {
+                    paddleX = relativeX - paddleWidth/2;
+                }
+            }
             
             function collisionDetection() {
                 for(var c=0; c<brickColumnCount; c++) {
@@ -93,21 +110,34 @@
                             if(x > p.x && x < p.x+brickWidth && y > p.y && y < p.y+brickHeight) {
                                 dy = -dy;
                                 p.status = 0;
-                                score++;
-                                //socket.emit('desenharScore');
-                                if(score == brickRowCount*brickColumnCount) {
-                                    alert("YOU WIN, CONGRATULATIONS!");
-                                    //document.location.reload();
-                                    clearInterval(interval); // Needed for Chrome to end game
-                                }
+                                score1++;
+                                // if((score1+score2) == brickRowCount*brickColumnCount && score1>score2) {
+                                //     alert("BLUE YOU WIN, CONGRATULATIONS!");
+                                //     document.location.reload();
+                                //     clearInterval(interval); // Needed for Chrome to end game
+                                // }
                             }
                             if(a > p.a && a < p.a+brickWidth && b > p.b && b < p.b+brickHeight) {
                                 db = -db;
                                 p.status = 0;
-                                score++;
-                                if(score == brickRowCount*brickColumnCount) {
-                                    alert("YOU WIN, CONGRATULATIONS!");
-                                    //document.location.reload();
+                                score2++;
+                                // if((score+score2) == brickRowCount*brickColumnCount && score2>score1) {
+                                //     alert("PINK YOU WIN, CONGRATULATIONS!");
+                                //     document.location.reload();
+                                //     clearInterval(interval); // Needed for Chrome to end game
+                                // }
+                            }
+                            if((score1+score2) == brickColumnCount*brickRowCount){
+                                if(score1>score2){
+                                    alert("BLUE YOU WIN, CONGRATULATIONS!");
+                                    clearInterval(interval); // Needed for Chrome to end game
+                                }
+                                if(score2>score1){
+                                    alert("PINK YOU WIN, CONGRATULATIONS!");
+                                    clearInterval(interval); // Needed for Chrome to end game
+                                }
+                                else{
+                                    alert("THE PLAYERS TIED!");
                                     clearInterval(interval); // Needed for Chrome to end game
                                 }
                             }
@@ -149,16 +179,16 @@
                 }
             }
 
-            function drawScore() {
+            function drawScore1() {
                 ctx.font = "16px Arial";
                 ctx.fillStyle = "#0095DD";
-                ctx.fillText("Score: "+tela, 8, 20);
+                ctx.fillText("Score Ball Blue: "+ score1, 8, 20);
             }
 
             function drawScore2(y) {
-                ctx.font = "25px Arial";
-                ctx.fillStyle = "#0095DD";
-                ctx.fillText("Score: "+score, 8, 40);
+                ctx.font = "16px Arial";
+                ctx.fillStyle = "#FF1493";
+                ctx.fillText("Score Ball Pink: "+ score2, 850, 20);
             }
 
             function drawBricks() {
@@ -173,7 +203,7 @@
                             bricks[c][r].b = brickY;
                             ctx.beginPath();
                             ctx.rect(brickX, brickY, brickWidth, brickHeight);
-                            ctx.fillStyle = "#0095DD";
+                            ctx.fillStyle = "#00FA9A";
                             ctx.fill();
                             ctx.closePath();
                         }
@@ -206,6 +236,14 @@
                 ctx.fillStyle = "#0095DD";
                 ctx.fill();
                 ctx.closePath();
+            }
+
+            function drawPaddle2() {
+            ctx.beginPath();
+            ctx.rect(paddle2X, canvas.height-paddleHeight, paddleWidth, paddleHeight);
+            ctx.fillStyle = "#FF1493";
+            ctx.fill();
+            ctx.closePath();
             }
 
             function drawBall1() {
@@ -241,8 +279,10 @@
                 if(ball2_ative==true)
                     drawBall2();
                 drawPaddle();
+                drawPaddle2();
                 drawBricks();
-                drawScore();
+                drawScore1();
+                drawScore2();
                 collisionDetection();
                 parede();
                 
@@ -270,6 +310,17 @@
                 if(b + db > canvas.height-ballRadius || b + db < ballRadius && ball2_ative==true) {
                     db = -db;
                 }
+                else if(b + db > canvas.height-ballRadius) {
+                    if(a > paddleX && a < paddleX + paddleWidth) {
+                        db = -db;
+                    }
+                    else {
+                        //alert("GAME OVER");
+                        //document.location.reload();
+                        //clearInterval(interval); // Needed for Chrome to end game
+                        db = -db;
+                    }
+                }
 
                 if(rightPressed) {
                     paddleX += 7;
@@ -295,6 +346,30 @@
             }
             ativarBolas();
             setInterval(draw, 10);
+
+            var joysticks = {
+            static: {
+                zone: document.querySelector('.zone.static'),
+                mode: 'static',
+                position: {
+                left: '100px',
+                top: '100px'
+                },
+                color: 'blue'
+            }
+            };
+            var joystick;
+            createNipple('static');
+
+            function createNipple(evt) {
+            var type = typeof evt === 'string' ?
+                evt : evt.target.getAttribute('data-type');
+            if (joystick) {
+                joystick.destroy();
+            }
+            joystick = nipplejs.create(joysticks[type]);
+            //bindNipple();
+            }
         </script>
     </body>
 </html>
