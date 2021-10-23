@@ -7,6 +7,13 @@ Your ball has a different color from your friend's.
 But don't worry, there is a little panel which shows your score and if you win, there will be a win message on your screen. 
 
 
+
+Here is what this game looks like:
+  <div align="center">
+   <img src="https://user-images.githubusercontent.com/69463877/138555277-f3ddf800-6f9a-4304-8eb7-be5b035f6ecf.png">
+  </div>
+  
+  
 --------------------------------------->  Here is how you can start playing! <------------------------------------------------
 
   - First of all, go following link: https://github.com/Manoob2408/Ball-Game;
