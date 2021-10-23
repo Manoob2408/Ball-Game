@@ -1,4 +1,4 @@
---------------------------------------------------------------Ball Game--------------------------------------------------------------------------
+------------------------------------------------------Ball Game--------------------------------------------------------------
  
 Implemented in html, css and javascript, floating Balls is a nice game that you play with your frind and your objective is breaking more retangles than him/her!
 
@@ -7,7 +7,7 @@ Your ball has a different color from your friend's.
 But don't worry, there is a little panel which shows your score and if you win, there will be a win message on your screen. 
 
 
------------------------------------------------------->  Here is how you can start playing! <----------------------------------------------------
+--------------------------------------->  Here is how you can start playing! <------------------------------------------------
 
   - First of all, go following link: https://github.com/Manoob2408/Ball-Game;
   - Download the zip file from the link above by clicking in the "Code" option and then in the "Download ZIP" option;
