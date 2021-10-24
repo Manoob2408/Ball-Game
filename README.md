@@ -16,6 +16,7 @@ Here is what this game looks like:
 ## Bfore running
 
 Make sure **Node.js** is installed on the master machine. 
+If it isnt, download Node.js here: https://nodejs.org/en/download/ 
 ## Running 
 
 - Download the zip file from the link above by clicking in the "Code" option and then in the "Download ZIP" option;
