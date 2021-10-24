@@ -32,8 +32,10 @@ var rightPressed = false;
 var leftPressed = false;
 
 //Propriedades dos tijolos
+
 var brickRowCount = 4;
 var brickColumnCount = 11;
+var totalBricks = brickRowCount*brickColumnCount;
 var brickWidth = 75;
 var brickHeight = 20;
 var brickPadding = 10;
@@ -42,6 +44,9 @@ var brickOffsetLeft = 30;
 
 var score = 0;
 var score2 = 0;
+var lives = 3;
+
+
 
 //Adicionando os tijolos
 var bricks = [];
@@ -71,21 +76,23 @@ function collisionDetection() {
                 if(x > p.x && x < p.x+brickWidth && y > p.y && y < p.y+brickHeight) {
                     dy = -dy;
                     p.status = 0;
+                    totalBricks--;
                     score++;
-                    if(score == brickRowCount*brickColumnCount) {
-                        alert("BLUE YOU WIN, CONGRATULATIONS!");
-                        document.location.reload();
-                        clearInterval(interval); // Needed for Chrome to end game
+                    if(score == brickRowCount*brickColumnCount || (totalBricks == 0 && score > score2 )) {            
+                            alert("BLUE YOU WIN, CONGRATULATIONS!");
+                            document.location.reload();
+                            clearInterval(interval); // Needed for Chrome to end game
                     }
                 }
                 if(a > p.a && a < p.a+brickWidth && b > p.b && b < p.b+brickHeight) {
                     db = -db;
                     p.status = 0;
                     score2++;
-                    if(score == brickRowCount*brickColumnCount) {
-                        alert("PINK YOU WIN, CONGRATULATIONS!");
-                        document.location.reload();
-                        clearInterval(interval); // Needed for Chrome to end game
+                    totalBricks--;
+                    if(score2 == brickRowCount*brickColumnCount || (totalBricks == 0 && score2 > score )){
+                            alert("PINK YOU WIN, CONGRATULATIONS!");
+                            document.location.reload();
+                            clearInterval(interval); // Needed for Chrome to end game
                     }
                 }
             }
@@ -105,6 +112,12 @@ function drawScore2() {
     ctx.fillText("Score Ball Pink: "+ score2, 850, 20);
 }
 
+function drawTotalBricks()
+{
+    ctx.font = "16px Arial";
+    ctx.fillStyle = "#00FA9A";
+    ctx.fillText("Total Bricks: "+ totalBricks, 400, 20);
+}
 
 
 
@@ -194,30 +207,30 @@ function draw() {
     drawBricks();
     drawScore();
     drawScore2();
+    drawTotalBricks();
     collisionDetection();
-    
+
     if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
         dx = -dx;
-    }
-    if(y + dy > canvas.height-ballRadius || y + dy < ballRadius) {
+      }
+      if(y + dy < ballRadius) {
         dy = -dy;
-    }
-    else if(y + dy > canvas.height-ballRadius) {
+      }
+      else if(y + dy > canvas.height-ballRadius) {
         if(x > paddleX && x < paddleX + paddleWidth) {
-            dy = -dy;
+          dy = -dy;
         }
         else {
-            //alert("GAME OVER");
+            //alert("GAME OVER, BLUE!");
             //document.location.reload();
-            //clearInterval(interval); // Needed for Chrome to end game
-            dy = -dy;
+            dy = -dy
         }
-    }
+      }
 
     if(a + da > canvas.width-ballRadius || a + da < ballRadius) {
         da = -da;
     }
-    if(b + db > canvas.height-ballRadius || b + db < ballRadius) {
+    if(b + db < ballRadius) {
         db = -db;
     }
     else if(b + db > canvas.height-ballRadius) {
@@ -225,9 +238,8 @@ function draw() {
             db = -db;
         }
         else {
-            //alert("GAME OVER");
+            //alert("GAME OVER, PINK");
             //document.location.reload();
-            //clearInterval(interval); // Needed for Chrome to end game
             db = -db;
         }
     }
