@@ -36,22 +36,24 @@ io.on('connection', async(socket)  => {
         const count2 = io.of("/").sockets.size;
         //console.log(`Sockets: ${sockets_conectados} ${count2}`);
 
+        //função que mostra o número da tela
         socket.emit('start', count2);
 
+        //função para desconectar quando entrar mais que 2 sockets
         if(count2>2){
             socket.disconnect();
             sockets_conectados.pop(socket.id);
         }
-
+        //função que mostra no console quando um socket é desconectado
         socket.on('disconnect', () => {
             console.log(`Socket desconectado: ${socket.id}`);
             sockets_conectados.pop(socket.id);
         });
-
+        //função que atualiza as outas abas
         socket.on('update', function(sc1, sc2,x,y,dx,dy,paddleX,a,b,da,db,paddle2X,totalBricks) {
             socket.broadcast.emit('mudarTela', sc1, sc2,x,y,dx,dy,paddleX,a,b,da,db,paddle2X,totalBricks);
         });
-
+        //função que atualiza os blocos nas outras abas
         socket.on('destroyBricks', function(c,r){
             socket.broadcast.emit('destroyBrick', c,r);
         });
