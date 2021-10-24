@@ -1,6 +1,6 @@
 ------------------------------------------------------Ball Game--------------------------------------------------------------
  
-Implemented in html, css and javascript, floating Balls is a nice game that you play with your frind and your objective is breaking more retangles than him/her!
+Implemented in html, css and javascript, floating Balls is a nice game that you play with your friends. Your objective is breaking more rectangles !
 
 Your ball has a different color from your friend's.
 
