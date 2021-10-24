@@ -16,24 +16,32 @@ Here is what this game looks like:
   
 --------------------------------------->  Here is how you can start playing! <------------------------------------------------
 
-  - First of all, go following link: https://github.com/Manoob2408/Ball-Game;
+  - Frst of all, go to following link: https://github.com/Manoob2408/Ball-Game;
   - Download the zip file from the link above by clicking in the "Code" option and then in the "Download ZIP" option;
-  - Extract the files and open it in your Visual Studio;
+  - Download the Node.js program here: https://nodejs.org/en/download/ and install this in your computer;
+  - Extract the files from the zip archive, go to the Socket file (Ball-Game-master -> Socket) and copy the file address;
+  - Open the command prompt, type cd and paste the link you copied;
+  - Press enter;
+  - Open the file "Ball-Game-master" in your Visual Studio;
   - Press F5 or click Run and then click Start Debugging;
   - That will open an option in your Visual Studio, where you can choose the Browser to play this game.
+  - Change the localhost:8080 to localhost:3000 in your Browser.
 
   If you prefer you can clone the repository following this tutorial:
+  - Go to following link: https://github.com/Manoob2408/Ball-Game;
   - Go to the code option and copy the URL;
   - Open the Git Bash;
   - Type this: $ git clone [PASTE HERE THE URL YOU COPIED]
   - Press Enter;
-  - Open your Visual Studio and run the code;
+  - Download the Node.js program here: https://nodejs.org/en/download/ and install this in your computer;
+  - Go to the Socket file (Ball-Game-master -> Socket) and copy the file address;
+  - Open the command prompt, type cd and paste the link you copied;
+  - Open your Visual Studio and press F5 or click Run and then click Start Debugging;
   - That will open an option in your Visual Studio, where you can choose the Browser to play this game.
+  - Change the localhost:8080 to localhost:3000 in your Browser.
 
-  We recommend you to choose Chrome. :)
-    That's it! Enjoy the game!
- 
-Hope you like it! :-)
+  We recommend you to choose Chrome. 
+    That's it! Enjoy the game! Hope you like it! :-)
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
