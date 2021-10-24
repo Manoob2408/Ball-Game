@@ -22,17 +22,31 @@
 
         <script type="text/javascript">
             var socket = io('http://localhost:3000');
+            
             var tela;
+            var canvas = document.getElementById("myCanvas");
 
-            socket.on('mudarTela', function(ball, y){
-                mudarTela(ball, y);
+            if(window.location.pathname=='/screenleft'){
+                console.log('left screen')
+                canvas.style.transform="translateX(+500px)"
+            }
+            else if(window.location.pathname=='/screenright'){
+                console.log('right screen')
+                canvas.style.transform="translateX(-500px)"
+            }
+            socket.on('mudarTela', function(sc1, sc2,posx, posy, velx,vely,pdX,a,b,da,db,paddle2X){
+                mudarTela(sc1, sc2,posx, posy, velx,vely,pdX,a,b,da,db,paddle2X);
             });
+            socket.on("destroyBrick", function(c,r){
+                destroyBrick(c,r);
+            });
+            // socket.on('transmitirTela', {
+            //     transmitirTela();
+            // });
 
             socket.on('start', numTela => {
                 tela=numTela;
             });
-
-            var canvas = document.getElementById("myCanvas");
 
             var ctx = canvas.getContext("2d"); 
 
@@ -48,9 +62,6 @@
             var a = canvas.width/2;
             var b = canvas.height-30;
 
-            // Definir a tela da bola
-            var ball1_ative = true;
-            var ball2_ative = true;
             //Velocidade da bola 1
             var dx = 2;
             var dy = 2;
@@ -96,7 +107,7 @@
             document.addEventListener("mousemove", mouseMoveHandler, false);
 
             function mouseMoveHandler(e) {
-                var relativeX = e.clientX - canvas.offsetLeft;
+                var relativeX = e.clientX*2 - canvas.offsetLeft;
                 if(relativeX > 0 && relativeX < canvas.width) {
                     paddleX = relativeX - paddleWidth/2;
                 }
@@ -116,6 +127,7 @@
                                 //     document.location.reload();
                                 //     clearInterval(interval); // Needed for Chrome to end game
                                 // }
+                                socket.emit('destroyBricks', c, r);
                             }
                             if(a > p.a && a < p.a+brickWidth && b > p.b && b < p.b+brickHeight) {
                                 db = -db;
@@ -126,6 +138,7 @@
                                 //     document.location.reload();
                                 //     clearInterval(interval); // Needed for Chrome to end game
                                 // }
+                                socket.emit('destroyBricks', c, r);
                             }
                             if((score1+score2) == brickColumnCount*brickRowCount){
                                 if(score1>score2){
@@ -142,40 +155,68 @@
                                 }
                             }
                         }
+
                     }
                 }
             }
+            // function transmitirTela(){
+            //     draw();
+            // }
+            function transmitir(posx, posy){
+                //drawScore2();
+                // if(ball=='ball1'){
+                //     console.log("TRANSMITIU!");
 
-            function mudarTela(ball, posicao){
-                
-                if(ball=='ball1'){
-
-                    ball1_ative=true;
-                    x=10;
-                    y=posicao;
-                }
-                else{
-                    ball2_ative=true;
-                    a=10;
-                    b=posicao;
-                }
+                //     x=10;
+                //     y=posicao;
+                // }
+                // else{
+                //     console.log("TRANSMITIU!");
+                //     a=10;
+                //     b=posicao;
+                // }
+            }
+            function mudarTela(sc1, sc2,posx, posy, velx,vely,pdX,posa,posb,vela,velb,pd2X){                
+                console.log("TRANSMITIU!");
+                console.log(pdX);
+                score1=sc1;
+                score2=sc2; 
+                x=posx;
+                y=posy;
+                a=posa;
+                b=posb;
+                dx=velx;
+                dy=vely;
+                da=vela;
+                db=velb;
+                paddleX=pdX;
+                paddle2X=pd2X;
+            }
+            function destroyBrick(c,r){
+                var brick = bricks[c][r];
+                brick.status=0;
             }
 
-            function ativarBolas(){
-                if(tela==1)
-                    ball2_ative=false;
-                else if(tela==2)
-                    ball1_ative=false;
-            }
+            // function ativarBolas(){
+            //     if(tela==1)
+            //         ball2_ative=false;
+            //     else if(tela==2)
+            //         ball1_ative=false;
+            // }
 
+            // function parede(){
+            //     if(x>=465 && ball1_ative==true){
+            //         ball1_ative=false;
+            //         socket.emit('desenharScore','ball1', y);
+            //     }
+            //     if(a>=465 && ball2_ative==true){
+            //         ball2_ative=false;
+            //         socket.emit('desenharScore','ball2', y);
+            //     }
+            // }
             function parede(){
-                if(x>=465 && ball1_ative==true){
-                    ball1_ative=false;
+                if(x<=900){
                     socket.emit('desenharScore','ball1', y);
-                }
-                if(a>=465 && ball2_ative==true){
-                    ball2_ative=false;
-                    socket.emit('desenharScore','ball2', y);
                 }
             }
 
@@ -185,7 +226,7 @@
                 ctx.fillText("Score Ball Blue: "+ score1, 8, 20);
             }
 
-            function drawScore2(y) {
+            function drawScore2() {
                 ctx.font = "16px Arial";
                 ctx.fillStyle = "#FF1493";
                 ctx.fillText("Score Ball Pink: "+ score2, 850, 20);
@@ -229,7 +270,7 @@
                 }
             }
 
-            function drawPaddle() {
+            function drawPaddle1() {
 
                 ctx.beginPath();
                 ctx.rect(paddleX, canvas.height-paddleHeight, paddleWidth, paddleHeight);
@@ -274,25 +315,31 @@
 
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-                if(ball1_ative==true)
-                    drawBall1();
-                if(ball2_ative==true)
-                    drawBall2();
-                drawPaddle();
+                
+                //transmitir();
+                drawBall1();
+                drawBall2();
+                drawPaddle1();
                 drawPaddle2();
                 drawBricks();
                 drawScore1();
                 drawScore2();
                 collisionDetection();
-                parede();
+                if(window.location.pathname=='/screenleft'){
+                    
+                    //socket.emit('transmitirTela', x, y);
+                    //socket.emit('desenharScore','ball1',y);
+                    socket.emit('update',score1,score2,x,y,dx,dy,paddleX,a,b,da,db,paddle2X);
+                }                
+                //parede();
                 
-                if(x + dx > canvas.width-ballRadius || x + dx < ballRadius && ball1_ative==true) {
+                if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
                     dx = -dx;
                 }
-                if(y + dy < ballRadius && ball1_ative==true) {
+                if(y + dy < ballRadius) {
                     dy = -dy;
                 }
-                else if(y + dy > canvas.height-ballRadius && ball1_ative==true) {
+                else if(y + dy > canvas.height-ballRadius) {
                     if(x > paddleX && x < paddleX + paddleWidth) {
                         dy = -dy;
                     }
@@ -304,14 +351,14 @@
                     }
                 }
 
-                if(a + da > canvas.width-ballRadius || a + da < ballRadius && ball2_ative==true) {
+                if(a + da > canvas.width-ballRadius || a + da < ballRadius) {
                     da = -da;
                 }
-                if(b + db > canvas.height-ballRadius || b + db < ballRadius && ball2_ative==true) {
+                if(b + db > canvas.height-ballRadius || b + db < ballRadius) {
                     db = -db;
                 }
                 else if(b + db > canvas.height-ballRadius) {
-                    if(a > paddleX && a < paddleX + paddleWidth) {
+                    if(a > paddle2X && a < paddle2X + paddleWidth) {
                         db = -db;
                     }
                     else {
@@ -323,29 +370,28 @@
                 }
 
                 if(rightPressed) {
-                    paddleX += 7;
-                    if (paddleX + paddleWidth > canvas.width){
-                        paddleX = canvas.width - paddleWidth;
+                    paddle2X += 7;
+                    if (paddle2X + paddleWidth > canvas.width){
+                        paddle2X = canvas.width - paddleWidth;
                     }
                 }
                 else if(leftPressed) {
-                    paddleX -= 7;
-                    if (paddleX < 0){
-                        paddleX = 0;
+                    paddle2X -= 7;
+                    if (paddle2X < 0){
+                        paddle2X = 0;
                     }
                 }
-                if(ball1_ative==true){
-                   x += dx;
-                   y += dy; 
-                }
-                if(ball2_ative==true){
-                   a += da;
-                   b += db;  
-                }
+                x += dx;
+                y += dy;
+                a += da;
+                b += db;
                 
             }
-            ativarBolas();
-            setInterval(draw, 10);
+            //ativarBolas();
+            // if(window.location.pathname=='/screenleft'){
+            //     setInterval(draw, 10);
+            // }            
+            setInterval(draw,10);
 
             var joysticks = {
             static: {
