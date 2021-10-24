@@ -28,16 +28,17 @@
 
             if(window.location.pathname=='/screenleft'){
                 console.log('left screen')
-                canvas.style.transform="translateX(+500px)"
+                //canvas.width=window.innerWidth;
+                //canvas.style.transform="translateX(+500px)"
             }
             else if(window.location.pathname=='/screenright'){
                 console.log('right screen')
                 canvas.style.transform="translateX(-500px)"
             }
-            //função recebe os parâmetros: score1,score2,x,y,dx,dy,paddleX,a,b,da,db,paddle2x
+            //função recebe os parâmetros: score1,score2,x,y,dx,dy,paddleX,a,b,da,db,paddle2x,totalBricks
             //função que atualiza os sockets
-            socket.on('mudarTela', function(sc1, sc2,posx, posy, velx,vely,pdX,a,b,da,db,pd2X){
-                mudarTela(sc1, sc2,posx, posy, velx,vely,pdX,a,b,da,db,pd2X);
+            socket.on('mudarTela', function(sc1, sc2,posx, posy, velx,vely,pdX,a,b,da,db,pd2X,totalB){
+                mudarTela(sc1, sc2,posx, posy, velx,vely,pdX,a,b,da,db,pd2X,totalB);
             });
             //função para destruir os blocos
             socket.on("destroyBrick", function(c,r){
@@ -55,12 +56,12 @@
 
             //Definir a posição da bola 1
             var x = canvas.width/2;
-            var y = canvas.height-40;
+            var y = canvas.height-30;
 
             // Definir a posição da bola 2
             //var a = canvas.width-50;
-            var a = canvas.width/2;
-            var b = canvas.height-30;
+            var a = canvas.width-50;
+            var b = canvas.height-40;
 
             //Velocidade da bola 1
             var dx = 2;
@@ -71,9 +72,9 @@
             var db = -2;
 
             //Propriedades do retângulo
-            var paddleHeight = 10;
+            var paddleHeight = 15;
             var paddleWidth = 75;
-            var paddleX = (canvas.width-paddleWidth) / 2;
+            var paddleX = (canvas.width/3)-paddleWidth;
             var paddle2X = (2*canvas.width/3) - paddleWidth;
             
             //Controle do retângulo pelas setas
@@ -83,6 +84,7 @@
             //Propriedades dos tijolos
             var brickRowCount = 4;
             var brickColumnCount = 11;
+            var totalBricks = brickRowCount*brickColumnCount;
             var brickWidth = 75;
             var brickHeight = 20;
             var brickPadding = 10;
@@ -92,6 +94,7 @@
             //Pontuação
             var score1 = 0;
             var score2 = 0;
+            var lives = 3;
 
             //Adicionando os tijolos
             var bricks = [];
@@ -123,6 +126,7 @@
                             if(x > p.x && x < p.x+brickWidth && y > p.y && y < p.y+brickHeight) {
                                 dy = -dy;
                                 p.status = 0;
+                                totalBricks--;
                                 score1++;
                                 socket.emit('destroyBricks', c, r);
                             }
@@ -130,6 +134,7 @@
                                 db = -db;
                                 p.status = 0;
                                 score2++;
+                                totalBricks--;
                                 socket.emit('destroyBricks', c, r);
                             }
                             if((score1+score2) == brickColumnCount*brickRowCount){
@@ -152,7 +157,7 @@
                 }
             }
             //Atualiza as outras telas
-            function mudarTela(sc1, sc2,posx, posy, velx,vely,pdX,posa,posb,vela,velb,pd2X){                
+            function mudarTela(sc1, sc2,posx, posy, velx,vely,pdX,posa,posb,vela,velb,pd2X,totalB){                
                 score1=sc1;
                 score2=sc2; 
                 x=posx;
@@ -165,6 +170,7 @@
                 db=velb;
                 paddleX=pdX;
                 paddle2X=pd2X;
+                totalBricks=totalB;
             }
             //Atualiza os blocos
             function destroyBrick(c,r){
@@ -182,6 +188,11 @@
                 ctx.font = "16px Arial";
                 ctx.fillStyle = "#FF1493";
                 ctx.fillText("Score Ball Pink: "+ score2, 850, 20);
+            }
+            function drawTotalBricks() {
+                ctx.font = "16px Arial";
+                ctx.fillStyle = "#00FA9A";
+                ctx.fillText("Total Bricks: "+ totalBricks, 400, 20);
             }
             //Desenha os blocos
             function drawBricks() {
@@ -265,9 +276,10 @@
                 drawBricks();
                 drawScore1();
                 drawScore2();
+                drawTotalBricks();
                 collisionDetection();
                 if(window.location.pathname=='/screenleft'){
-                    socket.emit('update',score1,score2,x,y,dx,dy,paddleX,a,b,da,db,paddle2X);
+                    socket.emit('update',score1,score2,x,y,dx,dy,paddleX,a,b,da,db,paddle2X,totalBricks);
                 }                
                 
                 if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) {

@@ -48,8 +48,8 @@ io.on('connection', async(socket)  => {
             sockets_conectados.pop(socket.id);
         });
 
-        socket.on('update', function(sc1, sc2,x,y,dx,dy,paddleX,a,b,da,db,paddle2X) {
-            socket.broadcast.emit('mudarTela', sc1, sc2,x,y,dx,dy,paddleX,a,b,da,db,paddle2X);
+        socket.on('update', function(sc1, sc2,x,y,dx,dy,paddleX,a,b,da,db,paddle2X,totalBricks) {
+            socket.broadcast.emit('mudarTela', sc1, sc2,x,y,dx,dy,paddleX,a,b,da,db,paddle2X,totalBricks);
         });
 
         socket.on('destroyBricks', function(c,r){
