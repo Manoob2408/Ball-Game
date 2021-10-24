@@ -34,16 +34,16 @@
                 console.log('right screen')
                 canvas.style.transform="translateX(-500px)"
             }
-            socket.on('mudarTela', function(sc1, sc2,posx, posy, velx,vely,pdX,a,b,da,db,paddle2X){
-                mudarTela(sc1, sc2,posx, posy, velx,vely,pdX,a,b,da,db,paddle2X);
+            //função recebe os parâmetros: score1,score2,x,y,dx,dy,paddleX,a,b,da,db,paddle2x
+            //função que atualiza os sockets
+            socket.on('mudarTela', function(sc1, sc2,posx, posy, velx,vely,pdX,a,b,da,db,pd2X){
+                mudarTela(sc1, sc2,posx, posy, velx,vely,pdX,a,b,da,db,pd2X);
             });
+            //função para destruir os blocos
             socket.on("destroyBrick", function(c,r){
                 destroyBrick(c,r);
             });
-            // socket.on('transmitirTela', {
-            //     transmitirTela();
-            // });
-
+            //função que retorna o número da tela
             socket.on('start', numTela => {
                 tela=numTela;
             });
@@ -89,6 +89,7 @@
             var brickOffsetTop = 30;
             var brickOffsetLeft = 30;
 
+            //Pontuação
             var score1 = 0;
             var score2 = 0;
 
@@ -106,13 +107,14 @@
             document.addEventListener("keyup", keyUpHandler, false);
             document.addEventListener("mousemove", mouseMoveHandler, false);
 
+            //Movimento do mouse 
             function mouseMoveHandler(e) {
                 var relativeX = e.clientX*2 - canvas.offsetLeft;
                 if(relativeX > 0 && relativeX < canvas.width) {
                     paddleX = relativeX - paddleWidth/2;
                 }
             }
-            
+            //Destrói o bloco quando a bola colide
             function collisionDetection() {
                 for(var c=0; c<brickColumnCount; c++) {
                     for(var r=0; r<brickRowCount; r++) {
@@ -122,22 +124,12 @@
                                 dy = -dy;
                                 p.status = 0;
                                 score1++;
-                                // if((score1+score2) == brickRowCount*brickColumnCount && score1>score2) {
-                                //     alert("BLUE YOU WIN, CONGRATULATIONS!");
-                                //     document.location.reload();
-                                //     clearInterval(interval); // Needed for Chrome to end game
-                                // }
                                 socket.emit('destroyBricks', c, r);
                             }
                             if(a > p.a && a < p.a+brickWidth && b > p.b && b < p.b+brickHeight) {
                                 db = -db;
                                 p.status = 0;
                                 score2++;
-                                // if((score+score2) == brickRowCount*brickColumnCount && score2>score1) {
-                                //     alert("PINK YOU WIN, CONGRATULATIONS!");
-                                //     document.location.reload();
-                                //     clearInterval(interval); // Needed for Chrome to end game
-                                // }
                                 socket.emit('destroyBricks', c, r);
                             }
                             if((score1+score2) == brickColumnCount*brickRowCount){
@@ -159,26 +151,8 @@
                     }
                 }
             }
-            // function transmitirTela(){
-            //     draw();
-            // }
-            function transmitir(posx, posy){
-                //drawScore2();
-                // if(ball=='ball1'){
-                //     console.log("TRANSMITIU!");
-
-                //     x=10;
-                //     y=posicao;
-                // }
-                // else{
-                //     console.log("TRANSMITIU!");
-                //     a=10;
-                //     b=posicao;
-                // }
-            }
+            //Atualiza as outras telas
             function mudarTela(sc1, sc2,posx, posy, velx,vely,pdX,posa,posb,vela,velb,pd2X){                
-                console.log("TRANSMITIU!");
-                console.log(pdX);
                 score1=sc1;
                 score2=sc2; 
                 x=posx;
@@ -192,46 +166,24 @@
                 paddleX=pdX;
                 paddle2X=pd2X;
             }
+            //Atualiza os blocos
             function destroyBrick(c,r){
                 var brick = bricks[c][r];
                 brick.status=0;
             }
-
-            // function ativarBolas(){
-            //     if(tela==1)
-            //         ball2_ative=false;
-            //     else if(tela==2)
-            //         ball1_ative=false;
-            // }
-
-            // function parede(){
-            //     if(x>=465 && ball1_ative==true){
-            //         ball1_ative=false;
-            //         socket.emit('desenharScore','ball1', y);
-            //     }
-            //     if(a>=465 && ball2_ative==true){
-            //         ball2_ative=false;
-            //         socket.emit('desenharScore','ball2', y);
-            //     }
-            // }
-            function parede(){
-                if(x<=900){
-                    socket.emit('desenharScore','ball1', y);
-                }
-            }
-
+            //Desenha pontuação 1
             function drawScore1() {
                 ctx.font = "16px Arial";
                 ctx.fillStyle = "#0095DD";
                 ctx.fillText("Score Ball Blue: "+ score1, 8, 20);
             }
-
+            //Desenha pontuação 2
             function drawScore2() {
                 ctx.font = "16px Arial";
                 ctx.fillStyle = "#FF1493";
                 ctx.fillText("Score Ball Pink: "+ score2, 850, 20);
             }
-
+            //Desenha os blocos
             function drawBricks() {
                 for(var c=0; c<brickColumnCount; c++) {
                     for(var r=0; r<brickRowCount; r++) {
@@ -269,7 +221,7 @@
                     leftPressed = false;
                 }
             }
-
+            //Desenha a barra 1
             function drawPaddle1() {
 
                 ctx.beginPath();
@@ -278,7 +230,7 @@
                 ctx.fill();
                 ctx.closePath();
             }
-
+            //Desenha a barra 2
             function drawPaddle2() {
             ctx.beginPath();
             ctx.rect(paddle2X, canvas.height-paddleHeight, paddleWidth, paddleHeight);
@@ -286,27 +238,19 @@
             ctx.fill();
             ctx.closePath();
             }
-
+            //Desenha a bola 1
             function drawBall1() {
                 ctx.beginPath();
                 ctx.arc(x, y, ballRadius, 0, Math.PI*2);
                 ctx.fillStyle = "#0095DD";
-                    // if(tela==1)
-                    //     ctx.fillStyle = "#0095DD";
-                    // else
-                    //     ctx.fillStyle = "#FF1493";
                 ctx.fill();
                 ctx.closePath();            
             }
-
+            //Desenha a bola 2
             function drawBall2(){                
                 ctx.beginPath();
                 ctx.arc(a, b, ballRadius, 0, Math.PI*2);
                 ctx.fillStyle = "#FF1493";
-                    // if(tela==1)
-                    //     ctx.fillStyle = "#FF1493";
-                    // else
-                    //     ctx.fillStyle = "#0095DD";
                 ctx.fill();
                 ctx.closePath(); 
             }
@@ -314,9 +258,6 @@
             function draw() {
 
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-                
-                //transmitir();
                 drawBall1();
                 drawBall2();
                 drawPaddle1();
@@ -326,12 +267,8 @@
                 drawScore2();
                 collisionDetection();
                 if(window.location.pathname=='/screenleft'){
-                    
-                    //socket.emit('transmitirTela', x, y);
-                    //socket.emit('desenharScore','ball1',y);
                     socket.emit('update',score1,score2,x,y,dx,dy,paddleX,a,b,da,db,paddle2X);
                 }                
-                //parede();
                 
                 if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
                     dx = -dx;
@@ -387,12 +324,9 @@
                 b += db;
                 
             }
-            //ativarBolas();
-            // if(window.location.pathname=='/screenleft'){
-            //     setInterval(draw, 10);
-            // }            
             setInterval(draw,10);
 
+            //Implementação do nipple
             var joysticks = {
             static: {
                 zone: document.querySelector('.zone.static'),
