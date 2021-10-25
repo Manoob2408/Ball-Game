@@ -4,7 +4,7 @@ Ball Game is a multiplayer and multiscreen remake of the classic arcade game Bre
 
 Each player controls 1 bar which has a color coded ball the player must bounce around to break the bricks and score points.
 
-A panel shows each player's scores. The player with the most points wins.
+A panel shows each player's scores. When all bricks are gone, the player with the most points wins, a player may .
 
 
   <div align="center">
@@ -50,10 +50,10 @@ cd [THE COPIED LINK]
 
 We recommend using either Edge or Chrome. 
     
-##License
+## License
 
 This software  is under the [BSD 2.0 License] (https://en.wikipedia.org/wiki/BSD_licenses)
 
-Copyright 2021 [Guilherme Santini Sforza](https://www.linkedin.com/in/guilherme-santini-sforza-a63528110/), [Lívia Sayuri Chinem Moreno](https://www.linkedin.com/in/lívia-sayuri-40143018a), Luiz Felipe Looze dos Santos(https://www.linkedin.com/in/luiz-felipe-144791196), Emanuela Lopez Ferreira, Gabriela Miranda Domingues, Rebeca Pedroso Silva
+Copyright 2021 [Guilherme Santini Sforza](https://www.linkedin.com/in/guilherme-santini-sforza-a63528110/), [Lívia Sayuri Chinem Moreno](https://www.linkedin.com/in/lívia-sayuri-40143018a), Luiz Felipe Looze dos Santos(https://www.linkedin.com/in/luiz-felipe-144791196), Emanuela Lopez Ferreira, Gabriela Miranda Domingues, [Rebeca Pedroso Silva](https://www.linkedin.com/mwlite/in/rebeca-pedroso-590a64170)
 
  
