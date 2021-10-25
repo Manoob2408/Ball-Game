@@ -52,8 +52,8 @@ We recommend using either Edge or Chrome.
     
 ## License
 
-This software  is under the [BSD 2.0 License] (https://en.wikipedia.org/wiki/BSD_licenses)
+This software  is under the [BSD 2.0 License](https://en.wikipedia.org/wiki/BSD_licenses)
 
-Copyright 2021 [Guilherme Santini Sforza](https://www.linkedin.com/in/guilherme-santini-sforza-a63528110/), [Lívia Sayuri Chinem Moreno](https://www.linkedin.com/in/lívia-sayuri-40143018a), Luiz Felipe Looze dos Santos(https://www.linkedin.com/in/luiz-felipe-144791196), Emanuela Lopez Ferreira, Gabriela Miranda Domingues, [Rebeca Pedroso Silva](https://www.linkedin.com/mwlite/in/rebeca-pedroso-590a64170)
+Copyright 2021 [Guilherme Santini Sforza](https://www.linkedin.com/in/guilherme-santini-sforza-a63528110/), [Lívia Sayuri Chinem Moreno](https://www.linkedin.com/in/lívia-sayuri-40143018a), [Luiz Felipe Looze dos Santos](https://www.linkedin.com/in/luiz-felipe-144791196), Emanuela Lopez Ferreira, Gabriela Miranda Domingues, [Rebeca Pedroso Silva](https://www.linkedin.com/mwlite/in/rebeca-pedroso-590a64170)
 
  
