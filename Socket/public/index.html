@@ -53,7 +53,19 @@
             socket.on('play', start => {
                 play=start;
             });
-
+            //função para movimentar as barras
+            socket.on('controladorseta', function(left, right){
+                if(window.location.pathname=='/screenright'){
+                    leftPressed = left;
+                    rightPressed = right;
+                }                
+            });
+            socket.on('controladorbtn', function(left, right){
+                if(window.location.pathname=='/screenright'){
+                    left2Pressed = left;
+                    right2Pressed = right;
+                }                
+            });
             var ctx = canvas.getContext("2d"); 
 
             //Raio das bolas
@@ -86,6 +98,10 @@
             var rightPressed = false;
             var leftPressed = false;
 
+            //Controle do retângulo pelos botões
+            var right2Pressed = false;
+            var left2Pressed = false;
+
             //Propriedades dos tijolos
             var brickRowCount = 4;
             var brickColumnCount = 11;
@@ -111,17 +127,17 @@
             }
 
 
-            document.addEventListener("keydown", keyDownHandler, false);
-            document.addEventListener("keyup", keyUpHandler, false);
-            document.addEventListener("mousemove", mouseMoveHandler, false);
+            // document.addEventListener("keydown", keyDownHandler, false);
+            // document.addEventListener("keyup", keyUpHandler, false);
+            // document.addEventListener("mousemove", mouseMoveHandler, false);
 
-            //Movimento do mouse 
-            function mouseMoveHandler(e) {
-                var relativeX = e.clientX*2 - canvas.offsetLeft;
-                if(relativeX > 0 && relativeX < canvas.width) {
-                    paddleX = relativeX - paddleWidth/2;
-                }
-            }
+            // //Movimento do mouse 
+            // function mouseMoveHandler(e) {
+            //     var relativeX = e.clientX*2 - canvas.offsetLeft;
+            //     if(relativeX > 0 && relativeX < canvas.width) {
+            //         paddleX = relativeX - paddleWidth/2;
+            //     }
+            // }
             //Destrói o bloco quando a bola colide
             function collisionDetection() {
                 for(var c=0; c<brickColumnCount; c++) {
@@ -220,23 +236,23 @@
                 }
             }
 
-            function keyDownHandler(e) {
-                if(e.key == "Right" || e.key == "ArrowRight") {
-                    rightPressed = true;
-                }
-                else if(e.key == "Left" || e.key == "ArrowLeft") {
-                    leftPressed = true;
-                }
-            }
+            // function keyDownHandler(e) {
+            //     if(e.key == "Right" || e.key == "ArrowRight") {
+            //         rightPressed = true;
+            //     }
+            //     else if(e.key == "Left" || e.key == "ArrowLeft") {
+            //         leftPressed = true;
+            //     }
+            // }
 
-            function keyUpHandler(e) {
-                if(e.key == "Right" || e.key == "ArrowRight") {
-                    rightPressed = false;
-                }
-                else if(e.key == "Left" || e.key == "ArrowLeft") {
-                    leftPressed = false;
-                }
-            }
+            // function keyUpHandler(e) {
+            //     if(e.key == "Right" || e.key == "ArrowRight") {
+            //         rightPressed = false;
+            //     }
+            //     else if(e.key == "Left" || e.key == "ArrowLeft") {
+            //         leftPressed = false;
+            //     }
+            // }
             //Desenha a barra 1
             function drawPaddle1() {
 
@@ -274,7 +290,6 @@
             function draw() {
 
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                console.log(`play=${play}`);
                 drawBall1();
                 drawBall2();
                 drawPaddle1();
@@ -299,7 +314,7 @@
                             dy = -dy;
                         }
                         else {
-                            //alert("GAME OVER! BLUE LOST");
+                            alert("GAME OVER! BLUE LOST");
                             //document.location.reload();
                             //clearInterval(interval); // Needed for Chrome to end game
                             dy = -dy;
@@ -317,7 +332,7 @@
                             db = -db;
                         }
                         else {
-                            //alert("GAME OVER! PINK LOST");
+                            alert("GAME OVER! PINK LOST");
                             //document.location.reload();
                             //clearInterval(interval); // Needed for Chrome to end game
                             db = -db;
@@ -336,6 +351,19 @@
                             paddle2X = 0;
                         }
                     }
+
+                    if(right2Pressed) {
+                        paddleX += 7;
+                        if (paddleX + paddleWidth > canvas.width){
+                            paddleX = canvas.width - paddleWidth;
+                        }
+                    }
+                    else if(left2Pressed) {
+                        paddleX -= 7;
+                        if (paddleX < 0){
+                            paddleX = 0;
+                        }
+                    }
                     x += dx;
                     y += dy;
                     a += da;
@@ -345,32 +373,6 @@
                 
             }
             setInterval(draw,10);
-
-            //Implementação do nipple ainda em andamento
-            //O nipple será enviado para a aba controller mas por enquanto está na tela para testes
-            var joysticks = {
-            static: {
-                zone: document.querySelector('.zone.static'),
-                mode: 'static',
-                position: {
-                left: '100px',
-                top: '100px'
-                },
-                color: 'blue'
-            }
-            };
-            var joystick;
-            createNipple('static');
-
-            function createNipple(evt) {
-            var type = typeof evt === 'string' ?
-                evt : evt.target.getAttribute('data-type');
-            if (joystick) {
-                joystick.destroy();
-            }
-            joystick = nipplejs.create(joysticks[type]);
-            //bindNipple();
-            }
         </script>
     </body>
 </html>

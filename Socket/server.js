@@ -20,6 +20,9 @@ app.use('/screenright', (req, res) => {
 app.use('/controller', (req, res) => {
     res.render('controller.html');
 })
+// app.use('/nipple', (req, res) => {
+//     res.render('nipple.html');
+// })
 // app.get('/screenleft',(request, response)=> {
 //     response.sendFile(__dirname=>'/index.html')
 // });
@@ -60,9 +63,15 @@ io.on('connection', async(socket)  => {
         socket.on('destroyBricks', function(c,r){
             socket.broadcast.emit('destroyBrick', c,r);
         });
-        socket.on('startPause', function(s, s2){
+        socket.on('startPause', s => {
             console.log(`start or pause`);
             socket.broadcast.emit('play', s);
+        });
+        socket.on('movePaddle', function(left, right){
+            socket.broadcast.emit('controladorseta', left, right);
+        });
+        socket.on('movePaddle2', function(left, right){
+            socket.broadcast.emit('controladorbtn', left, right);
         });
     }
     catch{

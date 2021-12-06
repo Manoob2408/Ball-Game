@@ -1,0 +1,44 @@
+<html>
+    <body>
+        <div id="zone_joystick"></div>
+        <!-- Não está funcionando! -->
+        <script type="text/javascript" src="./nipplejs.js"></script>
+        <script type="text/javascript">
+            var options = {
+                zone: document.getElementById('zone_joystick'),
+            };
+            var manager = nipplejs.create(options);
+            manager.on('move', function(evt, nipple){
+                console.log(nipple.direction)
+                let controllerDir
+                if(nipple.direction) controllerDir - nipple.direction.angle;
+                    if(controllerDir){
+                        socket.send(controllerDir);
+                    }
+            })
+            var joysticks = {
+                static: {
+                    zone: document.querySelector('.zone.static'),
+                    mode: 'static',
+                    position: {
+                    left: '100px',
+                    top: '100px'
+                    },
+                    color: 'blue'
+                }
+                };
+                var joystick;
+                createNipple('static');
+
+                function createNipple(evt) {
+                var type = typeof evt === 'string' ?
+                    evt : evt.target.getAttribute('data-type');
+                if (joystick) {
+                    joystick.destroy();
+                }
+                joystick = nipplejs.create(joysticks[type]);
+                //bindNipple();
+            }
+        </script>
+    </body>
+</html>

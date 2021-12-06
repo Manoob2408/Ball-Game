@@ -13,13 +13,29 @@
 
     </head>
     <body>
-        <input type="button" onclick="Start()" id="start" value="START">
-        <input type="button" disabled="disabled" onclick="Start()" id="pause" value="PAUSE">
+        <div class="col-md-6">
+            <div class="zone static"></div>
+        </div>
+
+        <div>
+            <p></p><p></p>
+            <input type="button" onclick="Start()" id="start" value="START">
+            <input type="button" disabled="disabled" onclick="Start()" id="pause" value="PAUSE">
+            <p></p><p></p>&nbsp Jogador 1: botoes &nbsp &nbsp Jogador 2: setas/teclado
+        </div>
+        <p></p><p></p>
+        <div>
+            <input type="button" onmousedown="Move(id)" onmouseup="StopMove()"  id="left" value="LEFT">
+            <input type="button" onmousedown="Move(id)" onmouseup="StopMove()"  id="right" value="RIGHT">
+        </div>
+        <!-- onclick="Move(id)" -->
         <script type="text/javascript">
 
             var start= false;
             let buttonStart = document.getElementById("start");
             let buttonPause = document.getElementById("pause");
+            var right2Pressed = false;
+            var left2Pressed = false;
             function Start(){
                 start = !start;
                 console.log(`start=${start}`);
@@ -31,10 +47,106 @@
                     buttonStart.disabled=false;
                     buttonPause.disabled=true;
                 }
-                socket.emit('startPause', start, !start);
+                socket.emit('startPause', start);
+            }
+            function Move(id){
+                console.log(`ID= ${id}`);
+                if(id=="left"){
+                    right2Pressed = false;
+                    left2Pressed = true;
+                }
+                else{
+                    right2Pressed = true;
+                    left2Pressed = false;
+                }
+                socket.emit('movePaddle2', left2Pressed, right2Pressed);
+            }
+            function StopMove(){
+                //console.log(`ID= ${id}`);
+                // if(id=="left"){
+                //     rightPressed = false;
+                //     leftPressed = false;
+                // }
+                // else{
+                    
+                // }
+                right2Pressed = false;
+                left2Pressed = false;
+                socket.emit('movePaddle2', left2Pressed, right2Pressed);
             }
 
-            var socket = io('http://localhost:3000');   
+
+            var socket = io('http://localhost:3000');
+
+            //bool que movimenta os retângulo pelas setas
+            var rightPressed = false;
+            var leftPressed = false;
+
+            document.addEventListener("keydown", keyDownHandler, false);
+            document.addEventListener("keyup", keyUpHandler, false);
+            //document.addEventListener("mousemove", mouseMoveHandler, false);
+
+            function keyDownHandler(e) {
+                if(e.key == "Right" || e.key == "ArrowRight") {
+                    rightPressed = true;
+                }
+                else if(e.key == "Left" || e.key == "ArrowLeft") {
+                    leftPressed = true;
+                }
+                socket.emit('movePaddle', leftPressed, rightPressed);
+            }
+
+            function keyUpHandler(e) {
+                if(e.key == "Right" || e.key == "ArrowRight") {
+                    rightPressed = false;
+                }
+                else if(e.key == "Left" || e.key == "ArrowLeft") {
+                    leftPressed = false;
+                }
+                socket.emit('movePaddle', leftPressed, rightPressed);
+            }
+            
+            
+            //Implementação do nipple
+            // var joysticks = {
+            // static: {
+            //     zone: document.querySelector('.zone.static'),
+            //     mode: 'static',
+            //     position: {
+            //     left: '100px',
+            //     top: '100px'
+            //     },
+            //     color: 'blue'
+            // }
+            // };
+            // var joystick;
+            // createNipple('static');
+
+            // function createNipple(evt) {
+            // var type = typeof evt === 'string' ?
+            //     evt : evt.target.getAttribute('data-type');
+            // if (joystick) {
+            //     joystick.destroy();
+            // }
+            // joystick = nipplejs.create(joysticks[type]);
+            // //bindNipple();
+            // }
+            // // socket.emit('movePadle', leftPressed, rightPressed);
+
+            // function joy(){
+            //     if(joystick.left<10){
+            //         console.log(`left`);
+            //     }
+            //     else if(joystick.left>10){
+            //         console.log(`right`);
+            //     }
+            //     else{
+            //         console.log(`${joystick.zone}`);
+            //     }
+            // }
+            
+            //setInterval(move, 10);
+
         </script>
     </body>
 </html>
