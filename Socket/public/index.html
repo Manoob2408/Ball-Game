@@ -24,11 +24,12 @@
             var socket = io('http://localhost:3000');
             
             var tela;
+            var play=false;
             var canvas = document.getElementById("myCanvas");
 
             if(window.location.pathname=='/screenleft'){
                 console.log('left screen')
-                //canvas.width=window.innerWidth;
+                canvas.width=500;
                 //canvas.style.transform="translateX(+500px)"
             }
             else if(window.location.pathname=='/screenright'){
@@ -47,6 +48,10 @@
             //função que retorna o número da tela
             socket.on('start', numTela => {
                 tela=numTela;
+            });
+            //função que retorna o valor de play
+            socket.on('play', start => {
+                play=start;
             });
 
             var ctx = canvas.getContext("2d"); 
@@ -269,6 +274,7 @@
             function draw() {
 
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
+                console.log(`play=${play}`);
                 drawBall1();
                 drawBall2();
                 drawPaddle1();
@@ -278,62 +284,64 @@
                 drawScore2();
                 drawTotalBricks();
                 collisionDetection();
-                if(window.location.pathname=='/screenleft'){
+                if(window.location.pathname=='/screenright'){
                     socket.emit('update',score1,score2,x,y,dx,dy,paddleX,a,b,da,db,paddle2X,totalBricks);
                 }                
+                if(play==true){
+                    if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
+                        dx = -dx;
+                    }
+                    if(y + dy < ballRadius) {
+                        dy = -dy;
+                    }
+                    else if(y + dy > canvas.height-ballRadius) {
+                        if(x > paddleX && x < paddleX + paddleWidth) {
+                            dy = -dy;
+                        }
+                        else {
+                            //alert("GAME OVER! BLUE LOST");
+                            //document.location.reload();
+                            //clearInterval(interval); // Needed for Chrome to end game
+                            dy = -dy;
+                        }
+                    }
+
+                    if(a + da > canvas.width-ballRadius || a + da < ballRadius) {
+                        da = -da;
+                    }
+                    if( b + db < ballRadius) {
+                        db = -db;
+                    }
+                    else if(b + db > canvas.height-ballRadius) {
+                        if(a > paddle2X && a < paddle2X + paddleWidth) {
+                            db = -db;
+                        }
+                        else {
+                            //alert("GAME OVER! PINK LOST");
+                            //document.location.reload();
+                            //clearInterval(interval); // Needed for Chrome to end game
+                            db = -db;
+                        }
+                    }
+
+                    if(rightPressed) {
+                        paddle2X += 7;
+                        if (paddle2X + paddleWidth > canvas.width){
+                            paddle2X = canvas.width - paddleWidth;
+                        }
+                    }
+                    else if(leftPressed) {
+                        paddle2X -= 7;
+                        if (paddle2X < 0){
+                            paddle2X = 0;
+                        }
+                    }
+                    x += dx;
+                    y += dy;
+                    a += da;
+                    b += db; 
+                }
                 
-                if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
-                    dx = -dx;
-                }
-                if(y + dy < ballRadius) {
-                    dy = -dy;
-                }
-                else if(y + dy > canvas.height-ballRadius) {
-                    if(x > paddleX && x < paddleX + paddleWidth) {
-                        dy = -dy;
-                    }
-                    else {
-                        alert("GAME OVER! BLUE LOST");
-                        //document.location.reload();
-                        //clearInterval(interval); // Needed for Chrome to end game
-                        dy = -dy;
-                    }
-                }
-
-                if(a + da > canvas.width-ballRadius || a + da < ballRadius) {
-                    da = -da;
-                }
-                if( b + db < ballRadius) {
-                    db = -db;
-                }
-                else if(b + db > canvas.height-ballRadius) {
-                    if(a > paddle2X && a < paddle2X + paddleWidth) {
-                        db = -db;
-                    }
-                    else {
-                        alert("GAME OVER! PINK LOST");
-                        //document.location.reload();
-                        //clearInterval(interval); // Needed for Chrome to end game
-                        db = -db;
-                    }
-                }
-
-                if(rightPressed) {
-                    paddle2X += 7;
-                    if (paddle2X + paddleWidth > canvas.width){
-                        paddle2X = canvas.width - paddleWidth;
-                    }
-                }
-                else if(leftPressed) {
-                    paddle2X -= 7;
-                    if (paddle2X < 0){
-                        paddle2X = 0;
-                    }
-                }
-                x += dx;
-                y += dy;
-                a += da;
-                b += db;
                 
             }
             setInterval(draw,10);

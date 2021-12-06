@@ -11,18 +11,23 @@ app.set('views', path.join(__dirname,'public'));
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
 
-app.use('/', (req, res) => {
+app.use('/screenleft', (req, res) => {
     res.render('index.html');
 })
-
-app.get('/screenleft',(request, response)=> {
-    response.sendFile(__dirname=>'/index.html')
-});
-app.get('/screenright',(request, response)=> {
-    response.sendFile(__dirname=>'/index.html')
-});
+app.use('/screenright', (req, res) => {
+    res.render('index.html');
+})
+app.use('/controller', (req, res) => {
+    res.render('controller.html');
+})
+// app.get('/screenleft',(request, response)=> {
+//     response.sendFile(__dirname=>'/index.html')
+// });
+// app.get('/screenright',(request, response)=> {
+//     response.sendFile(__dirname=>'/index.html')
+// });
 // app.get('/controller', (request, response)=> {
-//     response.sendFile(__dirname=>'/nipple.html')
+//     response.sendFile(__dirname=>'/controller.html')
 // })
 
 let sockets_conectados = [];
@@ -33,17 +38,15 @@ io.on('connection', async(socket)  => {
         console.log(`Socket conectado: ${socket.id}`);
         sockets_conectados.push(socket.id);
          
-        const count2 = io.of("/").sockets.size;
-        //console.log(`Sockets: ${sockets_conectados} ${count2}`);
+        const count = io.of("/").sockets.size;
 
         //função que mostra o número da tela
-        socket.emit('start', count2);
-
-        //função para desconectar quando entrar mais que 2 sockets
-        if(count2>2){
+        socket.emit('start', count);
+        //função para desconectar quando entrar mais que 3 sockets
+        if(count>3){           
             socket.disconnect();
-            sockets_conectados.pop(socket.id);
-        }
+            sockets_conectados.pop(socket.id);  
+        }        
         //função que mostra no console quando um socket é desconectado
         socket.on('disconnect', () => {
             console.log(`Socket desconectado: ${socket.id}`);
@@ -57,7 +60,10 @@ io.on('connection', async(socket)  => {
         socket.on('destroyBricks', function(c,r){
             socket.broadcast.emit('destroyBrick', c,r);
         });
-
+        socket.on('startPause', function(s, s2){
+            console.log(`start or pause`);
+            socket.broadcast.emit('play', s);
+        });
     }
     catch{
         console.log(`Erro na connection!`);

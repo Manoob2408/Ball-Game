@@ -1,0 +1,40 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" contente="width=devide-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Ball Game</title>
+
+        <script src="https:cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="https:cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"></script>
+        <!-- <script src="/Socket/public/server.js" type="module"></script> -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <script src="https://yoannmoinet.github.io/nipplejs/javascripts/nipplejs.js"></script>
+
+    </head>
+    <body>
+        <input type="button" onclick="Start()" id="start" value="START">
+        <input type="button" disabled="disabled" onclick="Start()" id="pause" value="PAUSE">
+        <script type="text/javascript">
+
+            var start= false;
+            let buttonStart = document.getElementById("start");
+            let buttonPause = document.getElementById("pause");
+            function Start(){
+                start = !start;
+                console.log(`start=${start}`);
+                if(start==true){
+                    buttonStart.disabled=true;
+                    buttonPause.disabled=false;
+                }
+                else{
+                    buttonStart.disabled=false;
+                    buttonPause.disabled=true;
+                }
+                socket.emit('startPause', start, !start);
+            }
+
+            var socket = io('http://localhost:3000');   
+        </script>
+    </body>
+</html>
